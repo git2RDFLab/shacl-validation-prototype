@@ -1,0 +1,503 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix analysis: <https://purl.archive.org/git2rdf/v2/git2RDFLab-analysis#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+# -----------------------------------------------------------------
+# Metadata about this SHACL Shapes Graph
+# -----------------------------------------------------------------
+
+<https://purl.archive.org/git2rdf/v2/git2RDFLab-analysis-shapes>
+    a owl:Ontology ;
+    rdfs:label "Git2RDF Analysis SHACL Shapes"@en ;
+    rdfs:comment "A collection of SHACL shapes for validating data conforming to the Git2RDF Analysis ontology (v2.0)."@en ;
+    
+    # --- Versioning Metadata ---
+    owl:versionInfo "2.0.0" ;
+    owl:versionIRI <https://purl.archive.org/git2rdf/v2/git2RDFLab-analysis-shapes> ;
+    dcterms:issued "2025-08-12"^^xsd:date ;
+    dcterms:modified "2025-08-12"^^xsd:date .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Analysis Result Shapes                          │
+# ╰──────────────────────────────────────────────────╯
+#
+
+analysis:ResultShape a sh:NodeShape ;
+    sh:targetClass analysis:Result ;
+    rdfs:label "Analysis Result Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path analysis:value ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:or (
+            [ sh:datatype xsd:integer ]
+            [ sh:datatype xsd:decimal ]
+            [ sh:datatype xsd:string ]
+            [ sh:datatype xsd:boolean ]
+        ) ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:metricId ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:executionTimestamp ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:measuredEntity ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional properties
+    sh:property [
+        sh:path analysis:category ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:status ;
+        sh:class analysis:Status ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:dataType ;
+        sh:class analysis:DataType ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:feedback ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:confidence ;
+        sh:datatype xsd:decimal ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:inputTokens ;
+        sh:datatype xsd:integer ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:minInclusive 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:outputTokens ;
+        sh:datatype xsd:integer ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:minInclusive 0 ;
+    ] ;
+    
+    # Relationships
+    sh:property [
+        sh:path analysis:basedOnMetric ;
+        sh:class analysis:Metric ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:wasGeneratedBy ;
+        sh:class analysis:Execution ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:usedConfiguration ;
+        sh:class analysis:LLMConfiguration ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:wasAttributedTo ;
+        sh:class analysis:Agent ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:name "was attributed to" ;
+        sh:description "The agent responsible for this result" ;
+    ] ;
+    
+    # PromptBuild relationship
+    sh:property [
+        sh:path analysis:usedPromptBuild ;
+        sh:class analysis:PromptBuild ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Analysis Metric Shapes                          │
+# ╰──────────────────────────────────────────────────╯
+#
+
+analysis:MetricShape a sh:NodeShape ;
+    sh:targetClass analysis:Metric ;
+    rdfs:label "Analysis Metric Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path analysis:metricId ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional properties
+    sh:property [
+        sh:path analysis:version ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:description ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:category ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:metricType ;
+        sh:class analysis:MetricType ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:expectedScale ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # PromptBuild relationship
+    sh:property [
+        sh:path analysis:hasPromptBuild ;
+        sh:class analysis:PromptBuild ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Analysis Execution Shapes                       │
+# ╰──────────────────────────────────────────────────╯
+#
+
+analysis:ExecutionShape a sh:NodeShape ;
+    sh:targetClass analysis:Execution ;
+    rdfs:label "Analysis Execution Shape"@en ;
+    
+    # Optional properties
+    sh:property [
+        sh:path analysis:version ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:executionTimestamp ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:scope ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:id ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:timeout ;
+        sh:datatype xsd:integer ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:minInclusive 0 ;
+    ] ;
+    
+    # Relationships
+    sh:property [
+        sh:path analysis:contains ;
+        sh:class analysis:Result ;
+        sh:minCount 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:usesConfiguration ;
+        sh:class analysis:LLMConfiguration ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path analysis:wasAssociatedWith ;
+        sh:class analysis:Agent ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Analysis Agent Shapes                           │
+# ╰──────────────────────────────────────────────────╯
+#
+
+analysis:AgentShape a sh:NodeShape ;
+    sh:targetClass analysis:Agent ;
+    rdfs:label "Analysis Agent Shape"@en ;
+    
+    # Optional properties
+    sh:property [
+        sh:path analysis:agentName ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+analysis:HumanAgentShape a sh:NodeShape ;
+    sh:targetClass analysis:HumanAgent ;
+    rdfs:label "Analysis Human Agent Shape"@en ;
+    
+    # Optional properties
+    sh:property [
+        sh:path analysis:expertise ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+    ] .
+
+analysis:AutomatedAgentShape a sh:NodeShape ;
+    sh:targetClass analysis:AutomatedAgent ;
+    rdfs:label "Analysis Automated Agent Shape"@en ;
+    
+    # Optional properties
+    sh:property [
+        sh:path analysis:model ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Relationships
+    sh:property [
+        sh:path analysis:hasConfiguration ;
+        sh:class analysis:LLMConfiguration ;
+        sh:minCount 0 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ LLM Configuration Shapes                        │
+# ╰──────────────────────────────────────────────────╯
+#
+
+analysis:LLMConfigurationShape a sh:NodeShape ;
+    sh:targetClass analysis:LLMConfiguration ;
+    rdfs:label "LLM Configuration Shape"@en ;
+    
+    # Optional properties
+    sh:property [
+        sh:path analysis:modelName ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:modelProvider ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:temperature ;
+        sh:datatype xsd:float ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 2.0 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:maxTokens ;
+        sh:datatype xsd:integer ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:minInclusive 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:timeout ;
+        sh:datatype xsd:integer ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:minInclusive 0 ;
+    ] ;
+    
+    # Relationships
+    sh:property [
+        sh:path analysis:belongsToAgent ;
+        sh:class analysis:AutomatedAgent ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Enumeration Constraints                         │
+# ╰──────────────────────────────────────────────────╯
+#
+
+analysis:StatusShape a sh:NodeShape ;
+    sh:targetClass analysis:Status ;
+    rdfs:label "Analysis Status Shape"@en ;
+    sh:in ( analysis:SUCCESS analysis:FAILED ) .
+
+analysis:DataTypeShape a sh:NodeShape ;
+    sh:targetClass analysis:DataType ;
+    rdfs:label "Analysis Data Type Shape"@en ;
+    sh:in ( analysis:boolean analysis:integer analysis:decimal analysis:string analysis:duration ) .
+
+analysis:MetricTypeShape a sh:NodeShape ;
+    sh:targetClass analysis:MetricType ;
+    rdfs:label "Analysis Metric Type Shape"@en .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Cross-Validation Rules                          │
+# ╰──────────────────────────────────────────────────╯
+#
+
+# Ensure confidence values are reasonable
+analysis:ConfidenceRangeShape a sh:NodeShape ;
+    sh:targetClass analysis:Result ;
+    rdfs:label "Confidence Range Shape"@en ;
+    
+    sh:property [
+        sh:path analysis:confidence ;
+        sh:datatype xsd:decimal ;
+        sh:minInclusive 0.0 ;
+        sh:maxInclusive 1.0 ;
+    ] .
+
+# Ensure token counts are non-negative
+analysis:TokenCountShape a sh:NodeShape ;
+    sh:targetClass analysis:Result ;
+    rdfs:label "Token Count Shape"@en ;
+    
+    sh:property [
+        sh:path analysis:inputTokens ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path analysis:outputTokens ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ PromptBuild Shapes                               │
+# ╰──────────────────────────────────────────────────╯
+#
+
+analysis:PromptBuildShape a sh:NodeShape ;
+    sh:targetClass analysis:PromptBuild ;
+    rdfs:label "Prompt Build Shape"@en ;
+    
+    # Example fetch method is required
+    sh:property [
+        sh:path analysis:exampleFetchMethod ;
+        sh:class analysis:ExampleFetchMethod ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Example count is optional but must be non-negative
+    sh:property [
+        sh:path analysis:exampleCount ;
+        sh:datatype xsd:integer ;
+        sh:minInclusive 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Template is optional
+    sh:property [
+        sh:path analysis:template ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+analysis:PropertyPromptBuildShape a sh:NodeShape ;
+    sh:targetClass analysis:PropertyPromptBuild ;
+    rdfs:label "Property Prompt Build Shape"@en ;
+    
+    # Inherits all constraints from PromptBuildShape
+    sh:node analysis:PromptBuildShape .
+
+analysis:LiteralPromptBuildShape a sh:NodeShape ;
+    sh:targetClass analysis:LiteralPromptBuild ;
+    rdfs:label "Literal Prompt Build Shape"@en ;
+    
+    # Inherits all constraints from PromptBuildShape
+    sh:node analysis:PromptBuildShape .
+
+analysis:ExampleFetchMethodShape a sh:NodeShape ;
+    sh:targetClass analysis:ExampleFetchMethod ;
+    rdfs:label "Example Fetch Method Shape"@en ;
+    sh:in ( analysis:graph-based analysis:metric-based ) .

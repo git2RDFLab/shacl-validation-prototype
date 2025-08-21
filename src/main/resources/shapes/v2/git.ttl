@@ -1,0 +1,351 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix git: <https://purl.archive.org/git2rdf/v2/git2RDFLab-git#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+# Ontology Declaration
+<https://purl.archive.org/git2rdf/v2/git2RDFLab-git-shapes#> a sh:NodeShape ;
+    rdfs:label "Git2RDF Git SHACL Shapes"@en ;
+    rdfs:comment "SHACL validation shapes for Git ontology"@en .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Git Repository Shapes                           │
+# ╰──────────────────────────────────────────────────╯
+#
+
+git:GitRepositoryShape a sh:NodeShape ;
+    sh:targetClass git:GitRepository ;
+    rdfs:label "Git Repository Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path git:encoding ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Relationships
+    sh:property [
+        sh:path git:hasBranch ;
+        sh:class git:GitBranch ;
+        sh:minCount 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path git:hasCommit ;
+        sh:class git:GitCommit ;
+        sh:minCount 0 ;
+    ] ;
+    
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Git Branch Shapes                               │
+# ╰──────────────────────────────────────────────────╯
+#
+
+git:GitBranchShape a sh:NodeShape ;
+    sh:targetClass git:GitBranch ;
+    rdfs:label "Git Branch Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path git:branchName ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Head commit relationship
+    sh:property [
+        sh:path git:headCommit ;
+        sh:or (
+            [ sh:class git:GitCommit ]
+            [ sh:nodeKind sh:IRI ]
+        ) ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Repository relationship
+    sh:property [
+        sh:path git:branchOf ;
+        sh:or (
+            [ sh:class git:GitRepository ]
+            [ sh:nodeKind sh:IRI ]
+        ) ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Git Commit Shapes                               │
+# ╰──────────────────────────────────────────────────╯
+#
+
+git:GitCommitShape a sh:NodeShape ;
+    sh:targetClass git:GitCommit ;
+    rdfs:label "Git Commit Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path git:hash ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^[a-f0-9]{40}$" ;
+    ] ;
+    
+    sh:property [
+        sh:path git:message ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path git:authorName ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path git:authorEmail ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path git:authorDate ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path git:committerName ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path git:committerEmail ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path git:commitDate ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional properties
+    sh:property [
+        sh:path git:isMergeCommit ;
+        sh:datatype xsd:boolean ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Relationships
+    sh:property [
+        sh:path git:hasParent ;
+        sh:class git:GitCommit ;
+        sh:minCount 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path git:inBranch ;
+        sh:or (
+            [ sh:class git:GitBranch ]
+            [ sh:nodeKind sh:IRI ]
+        ) ;
+        sh:minCount 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path git:hasDiffEntry ;
+        sh:class git:CommitDiffEntry ;
+        sh:minCount 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path git:committer ;
+        sh:or (
+            [ sh:class git:Person ]
+            [ sh:nodeKind sh:IRI ]
+        ) ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Git Tag Shapes                                  │
+# ╰──────────────────────────────────────────────────╯
+#
+
+git:GitTagShape a sh:NodeShape ;
+    sh:targetClass git:GitTag ;
+    rdfs:label "Git Tag Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path git:tagName ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path git:pointsTo ;
+        sh:class git:GitCommit ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional properties
+    sh:property [
+        sh:path git:tagMessage ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Git Person Shapes                               │
+# ╰──────────────────────────────────────────────────╯
+#
+
+git:PersonShape a sh:NodeShape ;
+    sh:targetClass git:Person ;
+    rdfs:label "Git Person Shape"@en ;
+    
+    # Note: Git Person is a simple class with no specific properties
+    # It inherits from foaf:Person and is used in Git context
+    sh:closed false .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Commit Diff Shapes                              │
+# ╰──────────────────────────────────────────────────╯
+#
+
+git:CommitDiffEntryShape a sh:NodeShape ;
+    sh:targetClass git:CommitDiffEntry ;
+    rdfs:label "Commit Diff Entry Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path git:changeType ;
+        sh:or (
+            [ sh:class git:ChangeType ]
+            [ sh:in ( git:add git:delete git:modify git:rename git:copy ) ]
+        ) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # File name properties
+    sh:property [
+        sh:path git:oldFileName ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path git:newFileName ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Relationships - diffEntryOf removed
+    
+    sh:property [
+        sh:path git:hasEdit ;
+        sh:class git:CommitDiffEdit ;
+        sh:minCount 0 ;
+    ] .
+
+git:CommitDiffEditShape a sh:NodeShape ;
+    sh:targetClass git:CommitDiffEdit ;
+    rdfs:label "Commit Diff Edit Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path git:editType ;
+        sh:or (
+            [ sh:class git:EditType ]
+            [ sh:in ( git:insert git:replace git:delete git:context ) ]
+        ) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Line number properties
+    sh:property [
+        sh:path git:oldLineStart ;
+        sh:datatype xsd:integer ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path git:newLineStart ;
+        sh:datatype xsd:integer ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path git:oldLineEnd ;
+        sh:datatype xsd:integer ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path git:newLineEnd ;
+        sh:datatype xsd:integer ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Relationships
+    sh:property [
+        sh:path git:editOf ;
+        sh:class git:CommitDiffEntry ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Enumeration Constraints                         │
+# ╰──────────────────────────────────────────────────╯
+#
+
+git:ChangeTypeShape a sh:NodeShape ;
+    sh:targetClass git:ChangeType ;
+    rdfs:label "Change Type Shape"@en ;
+    sh:in ( git:add git:delete git:modify git:rename git:copy ) .
+
+git:EditTypeShape a sh:NodeShape ;
+    sh:targetClass git:EditType ;
+    rdfs:label "Edit Type Shape"@en ;
+    sh:in ( git:insert git:replace git:delete git:context ) .

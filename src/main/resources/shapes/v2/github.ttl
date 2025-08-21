@@ -1,0 +1,491 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix github: <https://purl.archive.org/git2rdf/v2/git2RDFLab-platform-github#> .
+@prefix platform: <https://purl.archive.org/git2rdf/v2/git2RDFLab-platform#> .
+@prefix git: <https://purl.archive.org/git2rdf/v2/git2RDFLab-git#> .
+
+# Ontology Declaration
+<https://purl.archive.org/git2rdf/v2/git2RDFLab-platform-github-shapes#> a sh:NodeShape ;
+    rdfs:label "Git2RDF GitHub Platform SHACL Shapes"@en ;
+    rdfs:comment "SHACL validation shapes for GitHub-specific platform extensions"@en .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ GitHub User Shapes                              │
+# ╰──────────────────────────────────────────────────╯
+#
+
+github:UserShape a sh:NodeShape ;
+    sh:targetClass github:User ;
+    rdfs:label "GitHub User Shape"@en ;
+    
+    sh:property [
+        sh:path platform:username ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^[a-zA-Z0-9]([a-zA-Z0-9\\[\\]-]){0,38}$" ;
+    ] ;
+    
+    # Optional GitHub-specific properties
+    sh:property [
+        sh:path github:nodeId ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:pattern "^[A-Za-z0-9+/]*={0,2}$" ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:email ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ GitHub Repository Shapes                        │
+# ╰──────────────────────────────────────────────────╯
+#
+
+github:RepositoryShape a sh:NodeShape ;
+    sh:targetClass github:Repository ;
+    rdfs:label "GitHub Repository Shape"@en ;
+    
+    # GitHub-specific properties
+    sh:property [
+        sh:path github:archived ;
+        sh:datatype xsd:boolean ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Inherit all platform:Repository constraints
+    sh:property [
+        sh:path platform:name ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:owner ;
+        sh:class github:User ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ GitHub Issue Shapes                             │
+# ╰──────────────────────────────────────────────────╯
+#
+
+github:IssueShape a sh:NodeShape ;
+    sh:targetClass github:Issue ;
+    rdfs:label "GitHub Issue Shape"@en ;
+    
+    # Inherit all platform:Ticket constraints
+    sh:property [
+        sh:path platform:id ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:number ;
+        sh:or (
+            [ sh:datatype xsd:nonNegativeInteger ]
+            [ sh:datatype xsd:integer ; sh:minInclusive 0 ]
+            [ sh:nodeKind sh:Literal ; sh:minInclusive 0 ]
+        ) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:title ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:state ;
+        sh:or (
+            [ sh:datatype xsd:string ; sh:in ( "open" "closed" ) ]
+            [ sh:in ( platform:open platform:closed ) ]
+        ) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:submitter ;
+        sh:class github:User ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ GitHub Pull Request Shapes                      │
+# ╰──────────────────────────────────────────────────╯
+#
+
+github:PullRequestShape a sh:NodeShape ;
+    sh:targetClass github:PullRequest ;
+    rdfs:label "GitHub Pull Request Shape"@en ;
+    
+    # GitHub-specific PR properties
+    sh:property [
+        sh:path github:requestedReviewer ;
+        sh:class github:User ;
+        sh:minCount 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path github:requestedReviewerOf ;
+        sh:class github:PullRequest ;
+        sh:minCount 0 ;
+    ] ;
+    
+    # Inherit all platform:PullRequest constraints
+    sh:property [
+        sh:path platform:id ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:number ;
+        sh:or (
+            [ sh:datatype xsd:nonNegativeInteger ]
+            [ sh:datatype xsd:integer ; sh:minInclusive 0 ]
+            [ sh:nodeKind sh:Literal ; sh:minInclusive 0 ]
+        ) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:title ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:state ;
+        sh:or (
+            [ sh:datatype xsd:string ; sh:in ( "open" "closed" "merged" "draft" ) ]
+            [ sh:in ( platform:open platform:closed platform:merged platform:draft ) ]
+        ) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:submitter ;
+        sh:class github:User ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:sourceBranch ;
+        sh:or (
+            [ sh:class git:GitBranch ]
+            [ sh:nodeKind sh:IRI ]
+        ) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:targetBranch ;
+        sh:or (
+            [ sh:class git:GitBranch ]
+            [ sh:nodeKind sh:IRI ]
+        ) ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional merged properties
+    sh:property [
+        sh:path platform:merged ;
+        sh:datatype xsd:boolean ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:mergedBy ;
+        sh:class github:User ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:mergeCommitSha ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:pattern "^[a-f0-9]{40}$" ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ GitHub Comment Shapes                           │
+# ╰──────────────────────────────────────────────────╯
+#
+
+github:CommentShape a sh:NodeShape ;
+    sh:targetClass github:Comment ;
+    rdfs:label "GitHub Comment Shape"@en ;
+    
+    # Inherit all platform:Comment constraints
+    sh:property [
+        sh:path platform:id ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:body ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:author ;
+        sh:class github:User ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ GitHub Review Shapes                            │
+# ╰──────────────────────────────────────────────────╯
+#
+
+github:ReviewShape a sh:NodeShape ;
+    sh:targetClass github:Review ;
+    rdfs:label "GitHub Review Shape"@en ;
+    
+    # Inherit all platform:Review constraints
+    sh:property [
+        sh:path platform:id ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:reviewer ;
+        sh:class github:User ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:reviewState ;
+        sh:or (
+            [ sh:class platform:ReviewState ]
+            [ sh:in ( platform:COMMENTED platform:APPROVED platform:CHANGES_REQUESTED platform:DISMISSED platform:PENDING ) ]
+        ) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:reviewOf ;
+        sh:class github:PullRequest ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:dismissedBy ;
+        sh:class github:User ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ GitHub Review Comment Shapes                    │
+# ╰──────────────────────────────────────────────────╯
+#
+
+github:ReviewCommentShape a sh:NodeShape ;
+    sh:targetClass github:ReviewComment ;
+    rdfs:label "GitHub Review Comment Shape"@en ;
+    
+    # Inherit all platform:ReviewComment constraints
+    sh:property [
+        sh:path platform:id ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:body ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:author ;
+        sh:class github:User ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:reviewCommentOf ;
+        sh:class github:Review ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Threading relationship
+    sh:property [
+        sh:path platform:inReplyTo ;
+        sh:class github:ReviewComment ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ GitHub Workflow Shapes                          │
+# ╰──────────────────────────────────────────────────╯
+#
+
+github:WorkflowRunShape a sh:NodeShape ;
+    sh:targetClass github:WorkflowRun ;
+    rdfs:label "GitHub Workflow Run Shape"@en ;
+    
+    # GitHub-specific properties
+    sh:property [
+        sh:path github:runNumber ;
+        sh:datatype xsd:positiveInteger ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path github:runAttempt ;
+        sh:or (
+            [ sh:datatype xsd:positiveInteger ]
+            [ sh:datatype xsd:long ]
+        ) ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    
+    sh:property [
+        sh:path platform:createdAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:executionOf ;
+        sh:or (
+            [ sh:class github:PullRequest ]
+            [ sh:nodeKind sh:IRI ]
+        ) ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:trigger ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:in ( "push" "pull_request" "schedule" "manual" "workflow_dispatch" ) ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:status ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:in ( "queued" "in_progress" "completed" "pending" "running" "waiting" ) ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:conclusion ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:in ( "success" "failure" "cancelled" "skipped" "timed_out" "action_required" ) ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ GitHub Workflow Step Shapes                     │
+# ╰──────────────────────────────────────────────────╯
+#
+
+github:WorkflowStepShape a sh:NodeShape ;
+    sh:targetClass github:WorkflowStep ;
+    rdfs:label "GitHub Workflow Step Shape"@en ;
+    
+    # Inherits all platform:WorkflowStep constraints
+    # GitHub-specific validation can be added here
+    
+    # Platform name property (required)
+    sh:property [
+        sh:path platform:name ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional GitHub-specific properties
+    sh:property [
+        sh:path platform:runAttempt ;
+        sh:datatype xsd:positiveInteger ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:jobUrl ;
+        sh:datatype xsd:anyURI ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:pattern "^https://api\\.github\\.com/repos/[^/]+/[^/]+/actions/jobs/\\d+.*$" ;
+    ] ;
+    
+    # Temporal properties
+    sh:property [
+        sh:path platform:createdAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:updatedAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+

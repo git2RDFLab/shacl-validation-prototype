@@ -1,0 +1,781 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix platform: <https://purl.archive.org/git2rdf/v2/git2RDFLab-platform#> .
+@prefix git: <https://purl.archive.org/git2rdf/v2/git2RDFLab-git#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+# Ontology Declaration
+<https://purl.archive.org/git2rdf/v2/git2RDFLab-platform-shapes#> a sh:NodeShape ;
+    rdfs:label "Git2RDF Platform SHACL Shapes"@en ;
+    rdfs:comment "SHACL validation shapes for Platform ontology"@en .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Repository Shapes                               │
+# ╰──────────────────────────────────────────────────╯
+#
+
+platform:RepositoryShape a sh:NodeShape ;
+    sh:targetClass platform:Repository ;
+    rdfs:label "Platform Repository Shape"@en ;
+    
+    # Universal identifiers
+    sh:property [
+        sh:path platform:name ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional properties
+    sh:property [
+        sh:path platform:description ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:url ;
+        sh:datatype xsd:anyURI ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:isPrivate ;
+        sh:datatype xsd:boolean ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Temporal properties
+    sh:property [
+        sh:path platform:createdAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:updatedAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Relationships
+    sh:property [
+        sh:path platform:owner ;
+        sh:class platform:Person ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:defaultBranch ;
+        sh:class git:GitBranch ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Person Shapes                                   │
+# ╰──────────────────────────────────────────────────╯
+#
+
+platform:PersonShape a sh:NodeShape ;
+    sh:targetClass platform:Person ;
+    rdfs:label "Platform Person Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path platform:username ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional properties
+    sh:property [
+        sh:path platform:email ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:pattern "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$" ;
+        sh:flags "i" ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:name ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Ticket Shapes                                   │
+# ╰──────────────────────────────────────────────────╯
+#
+
+platform:TicketShape a sh:NodeShape ;
+    sh:targetClass platform:Ticket ;
+    rdfs:label "Platform Ticket Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path platform:id ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:number ;
+        sh:or (
+            [ sh:datatype xsd:nonNegativeInteger ]
+            [ sh:datatype xsd:integer ; sh:minInclusive 0 ]
+            [ sh:nodeKind sh:Literal ; sh:minInclusive 0 ]
+        ) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:title ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:state ;
+        sh:or (
+            [ sh:datatype xsd:string ; sh:in ( "open" "closed" "merged" "draft" ) ]
+            [ sh:in ( platform:open platform:closed platform:merged platform:draft ) ]
+        ) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:submitter ;
+        sh:class platform:Person ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional properties
+    sh:property [
+        sh:path platform:body ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:url ;
+        sh:datatype xsd:anyURI ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:locked ;
+        sh:datatype xsd:boolean ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:draft ;
+        sh:datatype xsd:boolean ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Temporal properties
+    sh:property [
+        sh:path platform:createdAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:updatedAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:closedAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Relationships
+    sh:property [
+        sh:path platform:assignee ;
+        sh:class platform:Person ;
+        sh:minCount 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:hasLabel ;
+        sh:class platform:Label ;
+        sh:minCount 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:hasComment ;
+        sh:class platform:Comment ;
+        sh:minCount 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:containsCommit ;
+        sh:class git:GitCommit ;
+        sh:minCount 0 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Pull Request Shapes                             │
+# ╰──────────────────────────────────────────────────╯
+#
+
+platform:PullRequestShape a sh:NodeShape ;
+    sh:targetClass platform:PullRequest ;
+    rdfs:label "Platform Pull Request Shape"@en ;
+    
+    # Inherits all Ticket properties, plus specific PR properties
+    
+    # Required PR-specific properties
+    sh:property [
+        sh:path platform:sourceBranch ;
+        sh:or (
+            [ sh:class git:GitBranch ]
+            [ sh:nodeKind sh:IRI ]
+        ) ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:targetBranch ;
+        sh:or (
+            [ sh:class git:GitBranch ]
+            [ sh:nodeKind sh:IRI ]
+        ) ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional PR-specific properties
+    sh:property [
+        sh:path platform:merged ;
+        sh:datatype xsd:boolean ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:mergedBy ;
+        sh:class platform:Person ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:mergedAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:mergeCommitSha ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:pattern "^[a-f0-9]{40}$" ;
+    ] ;
+    
+    # Review relationships
+    sh:property [
+        sh:path platform:requestedReviewer ;
+        sh:class platform:Person ;
+        sh:minCount 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:hasReview ;
+        sh:class platform:Review ;
+        sh:minCount 0 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Comment Shapes                                   │
+# ╰──────────────────────────────────────────────────╯
+#
+
+platform:CommentShape a sh:NodeShape ;
+    sh:targetClass platform:Comment ;
+    rdfs:label "Platform Comment Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path platform:id ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:body ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:author ;
+        sh:class platform:Person ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional properties
+    sh:property [
+        sh:path platform:url ;
+        sh:datatype xsd:anyURI ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Temporal properties
+    sh:property [
+        sh:path platform:createdAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:updatedAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Reactions
+    sh:property [
+        sh:path platform:hasReaction ;
+        sh:class platform:Reaction ;
+        sh:minCount 0 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Review Shapes                                   │
+# ╰──────────────────────────────────────────────────╯
+#
+
+platform:ReviewShape a sh:NodeShape ;
+    sh:targetClass platform:Review ;
+    rdfs:label "Platform Review Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path platform:id ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:reviewer ;
+        sh:class platform:Person ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:reviewState ;
+        sh:or (
+            [ sh:class platform:ReviewState ]
+            [ sh:in ( platform:COMMENTED platform:APPROVED platform:CHANGES_REQUESTED platform:DISMISSED platform:PENDING ) ]
+        ) ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:reviewOf ;
+        sh:class platform:PullRequest ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional properties
+    sh:property [
+        sh:path platform:reviewBody ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Temporal properties
+    sh:property [
+        sh:path platform:reviewedAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:dismissedAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:dismissedBy ;
+        sh:class platform:Person ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Review comments
+    sh:property [
+        sh:path platform:hasReviewComment ;
+        sh:class platform:ReviewComment ;
+        sh:minCount 0 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Review Comment Shapes                           │
+# ╰──────────────────────────────────────────────────╯
+#
+
+platform:ReviewCommentShape a sh:NodeShape ;
+    sh:targetClass platform:ReviewComment ;
+    rdfs:label "Platform Review Comment Shape"@en ;
+    
+    # Inherits from Comment, plus review-specific properties
+    
+    # Required relationship
+    sh:property [
+        sh:path platform:reviewCommentOf ;
+        sh:class platform:Review ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Threading relationship
+    sh:property [
+        sh:path platform:inReplyTo ;
+        sh:class platform:ReviewComment ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Reaction Shapes                                 │
+# ╰──────────────────────────────────────────────────╯
+#
+
+platform:ReactionShape a sh:NodeShape ;
+    sh:targetClass platform:Reaction ;
+    rdfs:label "Platform Reaction Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path platform:id ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:reactedBy ;
+        sh:class platform:Person ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:reactionType ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:reactionOf ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional properties
+    sh:property [
+        sh:path platform:reactedAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Workflow Shapes                                 │
+# ╰──────────────────────────────────────────────────╯
+#
+
+platform:WorkflowShape a sh:NodeShape ;
+    sh:targetClass platform:Workflow ;
+    rdfs:label "Platform Workflow Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path platform:id ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:name ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional properties
+    sh:property [
+        sh:path platform:createdAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Relationships
+    sh:property [
+        sh:path platform:hasExecution ;
+        sh:class platform:WorkflowExecution ;
+        sh:minCount 0 ;
+    ] .
+
+platform:WorkflowExecutionShape a sh:NodeShape ;
+    sh:targetClass platform:WorkflowExecution ;
+    rdfs:label "Platform Workflow Execution Shape"@en ;
+    
+    # Optional properties
+    sh:property [
+        sh:path platform:executionOf ;
+        sh:or (
+            [ sh:class platform:Workflow ]
+            [ sh:class platform:PullRequest ]
+            [ sh:nodeKind sh:IRI ]
+        ) ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:createdAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    sh:property [
+        sh:path platform:trigger ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:in ( "push" "pull_request" "schedule" "manual" "workflow_dispatch" "merge_request" ) ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:status ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:in ( "queued" "in_progress" "completed" "pending" "running" "waiting" ) ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:conclusion ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+        sh:in ( "success" "failure" "cancelled" "skipped" "timed_out" "action_required" ) ;
+    ] ;
+    
+    # PROV-O temporal properties
+    sh:property [
+        sh:path prov:startedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path prov:endedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:runAttempt ;
+        sh:datatype xsd:positiveInteger ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:runId ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+platform:WorkflowStepShape a sh:NodeShape ;
+    sh:targetClass platform:WorkflowStep ;
+    rdfs:label "Platform Workflow Step Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path platform:name ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional properties
+    sh:property [
+        sh:path platform:runAttempt ;
+        sh:datatype xsd:positiveInteger ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:jobUrl ;
+        sh:datatype xsd:anyURI ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:createdAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:updatedAt ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # PROV-O temporal properties
+    sh:property [
+        sh:path prov:startedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    sh:property [
+        sh:path prov:endedAtTime ;
+        sh:datatype xsd:dateTime ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Label Shape                                     │
+# ╰──────────────────────────────────────────────────╯
+#
+
+platform:LabelShape a sh:NodeShape ;
+    sh:targetClass platform:Label ;
+    rdfs:label "Platform Label Shape"@en ;
+    
+    # Required properties
+    sh:property [
+        sh:path platform:name ;
+        sh:datatype xsd:string ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+    
+    # Optional properties
+    sh:property [
+        sh:path platform:description ;
+        sh:datatype xsd:string ;
+        sh:minCount 0 ;
+        sh:maxCount 1 ;
+    ] .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Enumeration Constraints                         │
+# ╰──────────────────────────────────────────────────╯
+#
+
+platform:ReviewStateShape a sh:NodeShape ;
+    sh:targetClass platform:ReviewState ;
+    rdfs:label "Review State Shape"@en ;
+    sh:in ( platform:COMMENTED platform:APPROVED platform:CHANGES_REQUESTED platform:DISMISSED platform:PENDING ) .
+
+#
+# ╭──────────────────────────────────────────────────╮
+# │ Cross-Domain Analysis Shapes                    │
+# ╰──────────────────────────────────────────────────╯
+#
+
+platform:AnalyzableResourceShape a sh:NodeShape ;
+    sh:targetClass platform:Analyzable ;
+    rdfs:label "Analyzable Resource Shape"@en ;
+    
+    # Cross-domain analysis properties that can be attached to any analyzable resource
+    sh:property [
+        sh:path platform:hasRating ;
+        sh:minCount 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:hasEvaluation ;
+        sh:minCount 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:hasMetrics ;
+        sh:minCount 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:hasAnalysisResult ;
+        sh:minCount 0 ;
+    ] ;
+    
+    sh:property [
+        sh:path platform:hasAttachment ;
+        sh:minCount 0 ;
+    ] .

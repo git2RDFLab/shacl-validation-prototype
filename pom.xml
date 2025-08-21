@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.2.2</version>
+    <relativePath/> <!-- lookup parent from repository -->
+  </parent>
+  <groupId>de.leipzig.htwk.gitrdf</groupId>
+  <artifactId>shacl</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <name>shacl</name>
+  <description>Archetype project for HTWK Leipzig - Project to transform git to RDF</description>
+  <properties>
+    <java.version>21</java.version>
+    <!-- UPDATED: Use a recent RDF4J 5.x version -->
+    <rdf4j.version>4.3.10</rdf4j.version>
+    <org.apache.commons.commons-rdf-api.version>0.5.0</org.apache.commons.commons-rdf-api.version>
+    <org.apache.commons.commons-rdf-jena.version>0.5.0</org.apache.commons.commons-rdf-jena.version>
+    <de.leipzig.htwk.gitrdf.database.common.version>1.0.8-SNAPSHOT</de.leipzig.htwk.gitrdf.database.common.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+        <groupId>org.eclipse.rdf4j</groupId>
+        <artifactId>rdf4j-bom</artifactId>
+        <version>${rdf4j.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+    <dependency>
+        <groupId>org.eclipse.rdf4j</groupId>
+        <artifactId>rdf4j-shacl</artifactId>
+        <version>${rdf4j.version}</version>
+    </dependency>
+
+    <!-- Repository API - You already have this -->
+    <dependency>
+        <groupId>org.eclipse.rdf4j</groupId>
+        <artifactId>rdf4j-repository-sail</artifactId>
+        <version>${rdf4j.version}</version>
+    </dependency>
+
+    <!-- Memory Store - You already have this -->
+    <dependency>
+        <groupId>org.eclipse.rdf4j</groupId>
+        <artifactId>rdf4j-sail-memory</artifactId>
+        <version>${rdf4j.version}</version>
+    </dependency>
+
+    <!-- RDF4J Model API -->
+    <dependency>
+        <groupId>org.eclipse.rdf4j</groupId>
+        <artifactId>rdf4j-model</artifactId>
+        <version>${rdf4j.version}</version>
+    </dependency>
+
+    <!-- Rio Turtle - You already have this -->
+    <dependency>
+        <groupId>org.eclipse.rdf4j</groupId>
+        <artifactId>rdf4j-rio-turtle</artifactId>
+        <version>${rdf4j.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>de.leipzig.htwk.gitrdf.database</groupId>
+      <artifactId>common</artifactId>
+      <version>${de.leipzig.htwk.gitrdf.database.common.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+      <scope>runtime</scope>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>test</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-rdf-jena</artifactId>
+      <version>${org.apache.commons.commons-rdf-jena.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.14.0</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>2.2.0</version>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>1.18.32</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+      <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
